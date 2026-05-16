@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #F1ECDF;
+  --paper-2: #FBF7EC;
+  --ink: #1A1812;
+  --ink-2: #5C544A;
+  --rule: #C8BFA8;
+  --rule-soft: #DDD4BD;
+  --accent: #B8410A;
+  --accent-2: #7A2A05;
+  --ok: #2F5D3A;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-ok: var(--ok);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--paper);
+  color: var(--ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  /* Paper grain: layered radial noise + faint diagonal weave */
+  background-image:
+    radial-gradient(rgba(26,24,18,0.045) 1px, transparent 1px),
+    radial-gradient(rgba(26,24,18,0.03) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(184,65,10,0.02) 0 1px, transparent 1px 8px);
+  background-size: 3px 3px, 7px 7px, 14px 14px;
+  background-position: 0 0, 1px 1px, 0 0;
 }
+
+/* Tabular numerals for ledger feel */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Vertical rule that mimics ledger column gutter */
+.rule-v {
+  background-image: linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 100%);
+  background-size: 1px 6px;
+  background-repeat: repeat-y;
+}
+
+/* Dashed receipt perforation */
+.perf {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--ink) 0 6px,
+    transparent 6px 12px
+  );
+  background-size: 12px 1px;
+  background-repeat: repeat-x;
+  background-position: 0 50%;
+}
+
+/* Scalloped top/bottom edge for receipt card */
+.scallop-top {
+  --r: 8px;
+  -webkit-mask:
+    radial-gradient(var(--r) at 50% 0, transparent 98%, #000 101%) 50% 0/16px 100%,
+    linear-gradient(#000, #000) 0 var(--r)/100% calc(100% - var(--r)) no-repeat;
+          mask:
+    radial-gradient(var(--r) at 50% 0, transparent 98%, #000 101%) 50% 0/16px 100%,
+    linear-gradient(#000, #000) 0 var(--r)/100% calc(100% - var(--r)) no-repeat;
+}
+.scallop-bottom {
+  --r: 8px;
+  -webkit-mask:
+    radial-gradient(var(--r) at 50% 100%, transparent 98%, #000 101%) 50% 100%/16px 100%,
+    linear-gradient(#000, #000) 0 0/100% calc(100% - var(--r)) no-repeat;
+          mask:
+    radial-gradient(var(--r) at 50% 100%, transparent 98%, #000 101%) 50% 100%/16px 100%,
+    linear-gradient(#000, #000) 0 0/100% calc(100% - var(--r)) no-repeat;
+}
+
+/* Fade/slide on load */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise { animation: rise 700ms cubic-bezier(.2,.7,.2,1) both; }
+
+/* Spinning stamp for extraction state */
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spin-slow { animation: spin-slow 9s linear infinite; }
+
+/* Subtle text shimmer for processing */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--ink-2) 0%, var(--ink) 40%, var(--ink-2) 80%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Focus ring in our ink color */
+.ink-focus:focus {
+  outline: 1px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection { background: var(--accent); color: var(--paper-2); }
