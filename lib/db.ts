@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import { pgTable, serial, text, numeric, timestamp } from "drizzle-orm/pg-core";
 
 export const submissions = pgTable("submissions", {
@@ -11,9 +11,12 @@ export const submissions = pgTable("submissions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-const url = process.env.DATABASE_URL;
-if (!url) {
-  throw new Error("DATABASE_URL is not set");
-}
+let _db: NeonHttpDatabase | null = null;
 
-export const db = drizzle(neon(url));
+export function db(): NeonHttpDatabase {
+  if (_db) return _db;
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL is not set");
+  _db = drizzle(neon(url));
+  return _db;
+}

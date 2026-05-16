@@ -3,8 +3,10 @@ import { desc } from "drizzle-orm";
 import { db, submissions } from "@/lib/db";
 import { ReceiptSchema } from "@/lib/schema";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const rows = await db.select().from(submissions).orderBy(desc(submissions.createdAt)).limit(10);
+  const rows = await db().select().from(submissions).orderBy(desc(submissions.createdAt)).limit(10);
   return NextResponse.json(rows);
 }
 
@@ -16,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid payload", issues: parsed.error.issues }, { status: 400 });
     }
     const { merchant, date, total, currency } = parsed.data;
-    const [row] = await db
+    const [row] = await db()
       .insert(submissions)
       .values({ merchant, date, total: total.toString(), currency })
       .returning();
