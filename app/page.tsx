@@ -60,6 +60,19 @@ export default function Home() {
     if (f) acceptFile(f);
   };
 
+  const loadSample = async (path: string, label: string) => {
+    try {
+      const res = await fetch(path);
+      if (!res.ok) throw new Error("Sample not found");
+      const blob = await res.blob();
+      const filename = path.split("/").pop() ?? "sample";
+      acceptFile(new File([blob], filename, { type: blob.type }));
+      toast.success(`Loaded ${label}`);
+    } catch {
+      toast.error("Could not load sample");
+    }
+  };
+
   const onExtract = async () => {
     if (!file) {
       toast.error("Choose a receipt image first");
@@ -207,6 +220,25 @@ export default function Home() {
                 <p className="mt-6 text-[10px] uppercase tracking-[0.22em] text-ink-2">
                   JPG · PNG · WEBP · HEIC
                 </p>
+
+                <div
+                  className="mt-7 pt-5 border-t border-dashed border-ink/30 w-full max-w-[260px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <p className="text-[10px] uppercase tracking-[0.28em] text-ink-2 mb-3">
+                    Or try a sample
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <SampleChip
+                      label="Sample A"
+                      onClick={() => loadSample("/samples/example1.webp", "Sample A")}
+                    />
+                    <SampleChip
+                      label="Sample B"
+                      onClick={() => loadSample("/samples/example2.png", "Sample B")}
+                    />
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -525,6 +557,18 @@ function SmallField({
         ].join(" ")}
       />
     </label>
+  );
+}
+
+function SampleChip({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="px-3 py-2 text-[11px] uppercase tracking-[0.2em] border border-ink bg-paper-2 hover:bg-ink hover:text-paper-2 transition-colors"
+    >
+      {label}
+    </button>
   );
 }
 
