@@ -78,7 +78,3 @@ drizzle/0000_init.sql       Initial migration
 2. Import the repo on Vercel.
 3. Add a Neon Postgres integration from the Marketplace (auto-sets `DATABASE_URL`), then add `GOOGLE_GENERATIVE_AI_API_KEY` under Project Settings → Environment Variables.
 4. After first deploy, run `npm run db:push` against the production database (or apply `drizzle/0000_init.sql` from the Neon SQL editor).
-
-## License
-
-MIT
